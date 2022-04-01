@@ -16,12 +16,25 @@ The algorithm consists of the following steps:
 8. Check convergence condition.
 
 # Usage
-The esls.m function in the interface directory is a callable function of the algorithm. It takes the following inputs:
-the current iteration point, objective function handle, constraint function handle, algorithm parameters, and return:
-the next iteration point, lagrangian vector, convergence index. A usage example of the function is the esls_example.m
+The esls.m function in the interface directory is a callable function of the algorithm with the following structure:  
+[x_next,lambda,converged] = esls(x_current,obj_hand,fi_hand,options)  
+
+It takes the following inputs: 
+* the current iteration point; 
+* objective function handle; 
+* constraint function handle;
+* algorithm parameters;   
+
+and return:
+* the next iteration point;
+* lagrangian vector;
+* convergence index;  
+
+An usage example of the function interface is in the esls_example.m file.
 
 # Examples
 The files e_SLS_case1.m and n_SLS_case1.m ar 2D examples of the algorithm for the next optimizaitoin problem with exact measurements and noisy measurements respectively:  
 &emsp; min (x_1-2.7)^2+0.5(x_2-0.5)-5  
 &emsp; s.t. &ensp;  x1<=2.7  
-&emsp; &emsp;&emsp;  x2>=-5
+&emsp; &emsp;&emsp;  x2>=-5  
+The files are stand-alone runnable, the parameters setting and the optimization loop are integrated in one file. You can first try these two examples to have an overall understanding about the algorithm before using the function interface.
