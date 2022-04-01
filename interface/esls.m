@@ -37,6 +37,7 @@ function [x_next,lambda,converged] = esls(x_current,obj_hand,fi_hand,options)
 %           convergence index, 1-converged, 0-not converged
 %
 
+
     y_current = obj_hand(x_current);
     fi_current = fi_hand(x_current);
     
