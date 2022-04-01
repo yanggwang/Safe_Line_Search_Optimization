@@ -27,6 +27,15 @@ function [x_next,lambda,converged] = esls(x_current,obj_hand,fi_hand,options)
 %           c:    real
 %                 Small constant in step length selection
 %       example: options.L = 1, options.M = 1
+%   ------------------
+%   Return:
+%       x_next: array
+%           Decision point at the next iteration
+%       lambda: array
+%           Lagrangian multiplier vector
+%       converged: int
+%           convergence index, 1-converged, 0-not converged
+%
 
     y_current = obj_hand(x_current);
     fi_current = fi_hand(x_current);
