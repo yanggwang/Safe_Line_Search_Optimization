@@ -1,5 +1,33 @@
-function [x_next,lambda,converged] = e_sls(x_current,obj_hand,fi_hand,options)
-    
+function [x_next,lambda,converged] = esls(x_current,obj_hand,fi_hand,options)
+%This function runs the safe line-search optimization algorithm.
+%
+%   [x_next,lambda,converged] = esls(x_current,obj_hand,fi_hand,options) 
+%   
+%   Parameters
+%   ------------------
+%   x_current: array
+%       Decision point at the current iteration
+%   obj_hand: function handle
+%       Objective function_handle, example: y_current=obj_fun(x_current)
+%   fi_hand: function handle
+%       Constraint function_handle, example: fi_current=fi_fun(x_current)
+%   options: struct
+%       Algorithm parameters:
+%           L:    real
+%                 Lipschitz constant
+%           M:    real
+%           mu:   real
+%                 Gradient estimation deviation upperbound
+%           h:    real
+%                 Safety threshold
+%           epsl: real
+%                 Convergence condition
+%           rho:  real;
+%                 Update rate of step length selection
+%           c:    real
+%                 Small constant in step length selection
+%       example: options.L = 1, options.M = 1
+
     y_current = obj_hand(x_current);
     fi_current = fi_hand(x_current);
     

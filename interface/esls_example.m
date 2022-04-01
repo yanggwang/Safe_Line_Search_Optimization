@@ -38,7 +38,7 @@ for iter = 1:T
 
     x_current = x_hist(end,:);
 
-    [x_next,converged]=e_sls(x_current,obj_hand,fi_hand,options);
+    [x_next,lambda,converged]=esls(x_current,obj_hand,fi_hand,options);
 
     y_next = obj_fun(x_next);
     fi_next = fi_fun(x_next);
