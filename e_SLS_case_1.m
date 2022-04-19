@@ -77,7 +77,7 @@ for iter = 1:T
     Delta_ub = sqrt(d)*vk*M/2;
     
     if norm(p)~=0
-        [M,I]=max(p~=0);                        % The first nonzero element
+        [~,I]=max(p~=0);                        % The first nonzero element
         e = eye(d);
         e = e(:,I);
         GI_mod = Delta_ub*norm(p)*e/(e'*p);     % Modification on GI

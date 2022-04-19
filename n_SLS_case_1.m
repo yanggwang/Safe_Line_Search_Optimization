@@ -33,7 +33,7 @@ d = size(x0,2);             % Dimension of the problem
 m = size(fi_0,2);           % Number of constraints
 
 H = eye(d);                 % Initial inverse Hessian for computing newton direction
-use_newton_direction = 1;   % Use quasi-newton direction or steepest descent: 1-quasi_newton, 0:steepest descent
+use_newton_direction = 0;   % Use quasi-newton direction or steepest descent: 1-quasi_newton, 0:steepest descent
 
 %% Optimization loop
 for iter = 1:T
@@ -89,7 +89,7 @@ for iter = 1:T
     Delta_ub = sqrt(d)*vk*M/2;
     
     if norm(p)~=0
-        [M,I]=max(p~=0);                        % The first nonzero element
+        [~,I]=max(p~=0);                        % The first nonzero element
         e = eye(d);
         e = e(:,I);
         GI_mod = Delta_ub*norm(p)*e/(e'*p);     % Modification on GI
