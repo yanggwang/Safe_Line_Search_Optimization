@@ -151,7 +151,7 @@ function y = obj_fun(x)
     y = (x(1)-2.7)^2+0.5*(x(2)-0.5)^2-5;
 end
 
-% Define objective function
+% Define constraint functions
 function fi = fi_fun(x)
     f1 = x(1)-2.7;
     f2 = -5-x(2);
