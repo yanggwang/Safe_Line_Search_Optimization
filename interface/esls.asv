@@ -78,11 +78,16 @@ function [x_next,lambda,converged,G0] = esls(x_current,x_last,gt_last,obj_hand,f
     
     % Define the search direction
     if use_newton_direction
-        if prod(~isnan(x_last))&&prod(~isnan(gt_last))
+        if gt
+            x_last = x_hist(end-1,:);
+            gt_last = gt_hist(end-1,:)';
             x_diff = x_current'-x_last';
-            gt_diff = G0 - gt_last';
+            gt_diff = G0 - gt_last;
+            
             psi = 1/(gt_diff'*x_diff);
+
             H = (eye(d) - psi*x_diff*gt_diff')*H*(eye(d)-psi*gt_diff*x_diff') + psi*(x_diff*x_diff');
+
         end
 
         p = -H*G0;

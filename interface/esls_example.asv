@@ -5,11 +5,11 @@ M = 4;                % Smoothness constant
 T = 300;              % Maximum iteration
 
 mu = 0.01;            % Gradient estimation deviation upperbound
-h = 0.01;             % Safety threshold
+h = 0.1;              % Safety threshold
 epsl = 1e-10;         % Convergence condition
 rho = 0.9;            % Update rate of step length selection
 c = 10^-4;            % Small constant in step length selection
-newton_direction = 1; % Use quasi-newton direction or steepest descent: 1-quasi_newton, 0:steepest descent
+newton_direction = 0; % Use quasi-newton direction or steepest descent: 1-quasi_newton, 0:steepest descent
 
 
 options = struct;
@@ -40,23 +40,15 @@ for iter = 1:T
 
     x_current = x_hist(end,:);
 
-    if iter == 1
-        x_last = nan;
-        gt_last = nan;
-    else
-        x_last = x_hist(end-1,:);
-        gt_last = gt_hist(end,:);
-    end
-
-    [x_next,lambda,converged,gt_current]=esls(x_current,x_last,gt_last,obj_hand,fi_hand,options);
+    [x_next,lambda,converged,gt]=esls(x_current,obj_hand,fi_hand,options);
 
     y_next = obj_fun(x_next);
     fi_next = fi_fun(x_next);
 
     x_hist = [x_hist;x_next];
     y_hist = [y_hist;y_next];
-    fi_hist = [fi_hist;fi_next];
-    gt_hist = [gt_hist;gt_current'];
+    fi_hist = [fi_hist; fi_next];
+    gt_hist = [gt_hist;]
   
     fprintf("Iter: %d | Obj: %4.2f | Max_Cons: %1.2f \n", iter,y_next,max(fi_next));
     

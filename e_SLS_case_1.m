@@ -65,7 +65,6 @@ for iter = 1:T
             psi = 1/(gt_diff'*x_diff);
 
             H = (eye(d) - psi*x_diff*gt_diff')*H*(eye(d)-psi*gt_diff*x_diff') + psi*(x_diff*x_diff');
-
         end
 
         p = -H*G0;
