@@ -7,11 +7,10 @@ M = 4;          % Smoothness constant
 T = 300;        % Maximum iteration
 
 mu = 0.01;      % Gradient estimation deviation upperbound
-h = 0.1;        % Safety threshold
+h = 0.01;        % Safety threshold
 epsl = 1e-10;   % Convergence condition
 rho = 0.9;      % Update rate of step length selection
 c = 10^-4;      % Small constant in step length selection
-
 
 %% Define problem
 x0 = [0,-4];                % Starting point
@@ -27,7 +26,8 @@ gt_hist = [];               % Record gradient iteration
 d = size(x0,2);             % Dimension of the problem
 m = size(fi_0,2);           % Number of constraints
 
-
+H = eye(d);                 % Initial inverse Hessian for computing newton direction
+use_newton_direction = 0;   % Use quasi-newton direction or steepest descent
 %% Optimization loop
 for iter = 1:T
 
@@ -54,7 +54,24 @@ for iter = 1:T
     GI = (FI_current - fi_current)/vk;      % Compute gradient estimator for constraints
     gt_hist = [gt_hist; G0'];  
 
-    p = -G0;                                % Define the search direction
+    % Define the search direction
+    if use_newton_direction
+        if iter>1
+            x_last = x_hist(end-1,:);
+            gt_last = gt_hist(end-1,:)';
+            x_diff = x_current'-x_last';
+            gt_diff = G0 - gt_last;
+            
+            psi = 1/(gt_diff'*x_diff);
+
+            H = (eye(d) - psi*x_diff*gt_diff')*H*(eye(d)-psi*gt_diff*x_diff') + psi*(x_diff*x_diff');
+
+        end
+
+        p = -H*G0;
+    else
+        p = -G0;                            
+    end
 
     % Gradient estimation deviation
     Delta_ub = sqrt(d)*vk*M/2;
