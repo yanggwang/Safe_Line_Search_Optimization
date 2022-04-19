@@ -27,7 +27,7 @@ d = size(x0,2);             % Dimension of the problem
 m = size(fi_0,2);           % Number of constraints
 
 H = eye(d);                 % Initial inverse Hessian for computing newton direction
-use_newton_direction = 0;   % Use quasi-newton direction or steepest descent
+use_newton_direction = 0;   % Use quasi-newton direction or steepest descent: 1-quasi_newton, 0:steepest descent
 %% Optimization loop
 for iter = 1:T
 
