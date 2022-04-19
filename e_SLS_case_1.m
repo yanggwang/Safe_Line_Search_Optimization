@@ -11,7 +11,9 @@ h = 0.01;       % Safety threshold
 epsl = 1e-10;   % Convergence condition
 rho = 0.9;      % Update rate of step length selection
 c = 10^-4;      % Small constant in step length selection
-
+use_newton_direction = 1;   % Use quasi-newton direction or steepest descent: 
+                            % 1-quasi_newton, 0-steepest descent
+                            
 %% Define problem
 x0 = [0,-4];                % Starting point
 y_0 = obj_fun(x0);          % Objective function
@@ -27,7 +29,7 @@ d = size(x0,2);             % Dimension of the problem
 m = size(fi_0,2);           % Number of constraints
 
 H = eye(d);                 % Initial inverse Hessian for computing newton direction
-use_newton_direction = 1;   % Use quasi-newton direction or steepest descent: 1-quasi_newton, 0-steepest descent
+
 %% Optimization loop
 for iter = 1:T
 
