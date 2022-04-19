@@ -56,7 +56,7 @@ for iter = 1:T
 
 end
 
-% plot_figure(x_hist,y_hist,fi_hist)
+plot_figure(x_hist,y_hist,fi_hist)
 
 %% Auxiliary functions
 
