@@ -160,5 +160,5 @@ function [x_next,lambda,converged,G0] = esls(x_current,x_last,gt_last,obj_hand,f
     else
         converged = 0;
     end
-
+ 
 end

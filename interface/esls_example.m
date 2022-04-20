@@ -38,7 +38,7 @@ fi_hand = @fi_fun;          % Handle of constraint function
 
 %% Optimization loop
 for iter = 1:T
-
+ 
     x_current = x_hist(end,:);
 
     if iter == 1

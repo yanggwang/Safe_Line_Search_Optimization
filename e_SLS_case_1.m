@@ -174,7 +174,7 @@ function fi = fi_fun(x)
     f2 = -5-x(2);
     fi = [f1,f2];
 end
-
+ 
 % Plot figures
 function []=plot_figure(x_hist,y_hist,fi_hist)
     n_itr = size(y_hist,1);

@@ -157,7 +157,7 @@ end
 
 % plot figure
 plot_figure(x_hist,y_hist,fi_hist);
-
+ 
 
 %% Auxiliary functions
 
