@@ -129,7 +129,7 @@ for iter = 1:T
     fi_k1 = fi_fun(x_current+alpha*p');
 
     % Select safe step length
-    while y_k1 > y_k + c*alpha*(G0'*p) || min(-fi_k1)<0.9*h
+    while y_k1 > y_k + c*alpha*(G0'*p) || min(-fi_k1)<h
         alpha = alpha* rho;
 
         y_k1 = obj_fun(x_current+alpha*p');

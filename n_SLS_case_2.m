@@ -1,6 +1,6 @@
 clear; clc; close all
 
-%% Define e-SLS parameters
+%% Define n-SLS parameters
 
 L = 8;                      % Lipschitz constant
 M = 4;                      % Smoothness constant
@@ -8,11 +8,15 @@ T = 300;                    % Maximum iteration
 
 mu = 0.01;                  % Gradient estimation deviation upperbound
 h = 0.05;                   % Safety threshold
-epsl = 1e-10;               % Convergence condition
-rho = 0.5;                  % Update rate of step length selection 0.9
+epsl = 1e-20;               % Convergence condition
+rho = 0.9;                  % Update rate of step length selection
 c = 10^-4;                  % Small constant in step length selection
-use_newton_direction = 1;   % Use quasi-newton direction or steepest descent: 
-                            % 1-quasi_newton, 0-steepest descent
+
+sigma = 1e-2;               % Standard deviation of measurement noise
+delta = 0.01;               % Probability of not violating constraints: 1-delta
+nk = 100;                   % Number of measurements of function values
+                            % Set to zero if use the measurements times computed by
+                            % algorithm (a large value);
 
 %% Define problem
 x0 = [-2,-1];               % Starting point
@@ -28,7 +32,8 @@ gt_hist = [];               % Record gradient iteration
 d = size(x0,2);             % Dimension of the problem
 m = size(fi_0,2);           % Number of constraints
 
-H = eye(d);
+H = eye(d);                 % Initial inverse Hessian for computing newton direction
+use_newton_direction = 0;   % Use quasi-newton direction or steepest descent: 1-quasi_newton, 0-steepest descent
 
 %% Optimization loop
 for iter = 1:T
@@ -40,10 +45,13 @@ for iter = 1:T
 
     % Compute step length for finite difference
     vk = min(2*mu/(sqrt(d)*M), min(-fi_current)/(2*L));   
-
+    
+    if nk ==0
+        nk = round(-16*sigma^2*log(delta)/(3*vk^4*M^2));
+    end
     X_current = repmat(x_current,d,1);
-    VT = eye(d)*vk;
-    X_current = X_current+VT;
+    VK = eye(d)*vk;
+    X_current = X_current+VK;
     Y_current = [];
     FI_current = [];
     for i = 1:d
@@ -52,11 +60,15 @@ for iter = 1:T
         Y_current = [Y_current; y_e];
         FI_current = [FI_current; fi_e];
     end
-    
+    % Take mean value of measurements
+    Y_current = Y_current + mean(sigma.*randn([size(Y_current),nk]),3);
+    FI_current = FI_current + mean(sigma.*randn([size(FI_current),nk]),3);
+
     G0 = (Y_current - y_current)/vk;        % Compute gradient estimator for objective
     GI = (FI_current - fi_current)/vk;      % Compute gradient estimator for constraints
     gt_hist = [gt_hist; G0'];  
 
+    % Define the search direction
     if use_newton_direction
         if iter>1
             x_last = x_hist(end-1,:);
@@ -71,11 +83,11 @@ for iter = 1:T
 
         p = -H*G0;
     else
-        p = -G0;                                % Define the search direction
+        p = -G0;                            
     end
 
     % Gradient estimation deviation
-    Delta_ub = sqrt(d)*vk*M/2;
+    Delta_ub = sqrt(d*M^2*vk^2/4-4*d*sigma^2*log(delta)/(vk^2*nk));
     
     if norm(p)~=0
         [~,I]=max(p~=0);                        % The first nonzero element
@@ -111,9 +123,11 @@ for iter = 1:T
         end
     end
 
+
     % Centers and radii of each safe set of fi
     O_fi = x_current-GI_hat'./M;            
     R_fi = sqrt((vecnorm(GI_hat',2,2)/M).^2-2*fi_current'/M);
+
 
     % Compute the upper bound of the step length
     alpha_hat = min(R_fi);
@@ -127,6 +141,8 @@ for iter = 1:T
 
     y_k1 = obj_fun(x_current+alpha*p');
     fi_k1 = fi_fun(x_current+alpha*p');
+    y_k1 = y_k1+mean(sigma.*randn([size(y_k1),nk]),3);
+    fi_k1 = fi_k1+mean(sigma.*randn([size(fi_k1),nk]),3);
 
     % Select safe step length
     while y_k1 > y_k + c*alpha*(G0'*p) || min(-fi_k1)<0.9*h
@@ -134,13 +150,17 @@ for iter = 1:T
 
         y_k1 = obj_fun(x_current+alpha*p');
         fi_k1 = fi_fun(x_current+alpha*p');
+        y_k1 = y_k1+mean(sigma.*randn([size(y_k1),nk]),3);
+        fi_k1 = fi_k1+mean(sigma.*randn([size(fi_k1),nk]),3);
     end
 
     % Update iteration
-    
     x_next = x_current + alpha*p';
     y_next = obj_fun(x_next);
     fi_next = fi_fun(x_next);
+
+    y_next = y_next+mean(sigma.*randn([size(y_next),nk]),3);
+    fi_next = fi_next+mean(sigma.*randn([size(fi_next),nk]),3);
 
     x_hist = [x_hist;x_next];
     y_hist = [y_hist;y_next];
@@ -158,7 +178,6 @@ end
 % plot figure
 plot_figure(x_hist,y_hist,fi_hist);
 
-
 %% Auxiliary functions
 
 % Define objective function
@@ -166,7 +185,7 @@ function y = obj_fun(x)
     y = (x(1)-2.7)^2+0.5*(x(2)-0.5)^2-5;
 end
 
-% Define constraint function
+% Define constraint functions
 function fi = fi_fun(x)
     fi = 1.5*sin(x(1))-x(2)-0.1;
 end

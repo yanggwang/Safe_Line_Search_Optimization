@@ -2,16 +2,16 @@ clear; clc; close all
 
 %% Define e-SLS parameters
 
-L = 8;          % Lipschitz constant
-M = 4;          % Smoothness constant
-T = 300;        % Maximum iteration
+L = 8;                      % Lipschitz constant
+M = 4;                      % Smoothness constant
+T = 300;                    % Maximum iteration
 
-mu = 0.01;      % Gradient estimation deviation upperbound
-h = 0.01;       % Safety threshold
-epsl = 1e-10;   % Convergence condition
-rho = 0.9;      % Update rate of step length selection
-c = 10^-4;      % Small constant in step length selection
-use_newton_direction = 1;   % Use quasi-newton direction or steepest descent: 
+mu = 0.01;                  % Gradient estimation deviation upperbound
+h = 0.00;                   % Safety threshold
+epsl = 1e-10;               % Convergence condition
+rho = 0.9;                  % Update rate of step length selection
+c = 10^-4;                  % Small constant in step length selection
+use_newton_direction = 0;   % Use quasi-newton direction or steepest descent: 
                             % 1-quasi_newton, 0-steepest descent
                             
 %% Define problem
@@ -38,7 +38,8 @@ for iter = 1:T
     fi_current = fi_hist(end,:);
     lambda_sol = [];
 
-    vk = min(2*mu/(sqrt(d)*M), min(-fi_current)/(2*L));   % Compute step length for finite difference
+    % Compute step length for finite difference
+    vk = min(2*mu/(sqrt(d)*M), min(-fi_current)/(2*L));   
 
     X_current = repmat(x_current,d,1);
     VT = eye(d)*vk;
@@ -52,8 +53,8 @@ for iter = 1:T
         FI_current = [FI_current; fi_e];
     end
     
-    G0 = (Y_current - y_current)/vk;        % Compute gradient estimator for objective
-    GI = (FI_current - fi_current)/vk;      % Compute gradient estimator for constraints
+    G0 = (Y_current - y_current)/vk;        % Compute gradient estimator for objective: d x 1
+    GI = (FI_current - fi_current)/vk;      % Compute gradient estimator for constraints: d x m
     gt_hist = [gt_hist; G0'];  
 
     % Define the search direction
@@ -87,9 +88,6 @@ for iter = 1:T
         GI_hat = GI;
     end
 
-    % Centers and radii of each safe set of fi
-    O_fi = x_current-GI_hat'./M;            
-    R_fi = sqrt((vecnorm(GI_hat',2,2)/M).^2-2*fi_current'/M);
 
     % Search direction projection if min(-fi) <= safety threshold
     if min(-fi_current) <= h
@@ -98,11 +96,28 @@ for iter = 1:T
         % Find active constraint indices
         A = find(-fi_current<=h);
         % Solve non-negative least squares problem
-        [lambda_sol,resnorm,resvec] = lsqnonneg(GI(:,A),p_orig);    
+        [lambda_sol,resnorm,resvec] = lsqnonneg(GI_hat(:,A),p_orig);    
 
         p_proj = -resvec;
         p = p_proj;
+
+        % Recompute GI hat
+        if norm(p)~=0
+            [~,I]=max(p~=0);                        % The first nonzero element
+            e = eye(d);
+            e = e(:,I);
+            GI_mod = Delta_ub*norm(p)*e/(e'*p);     % Modification on GI
+            GI_hat = GI + GI_mod;
+        else
+            GI_hat = GI;
+        end
     end
+
+
+    % Centers and radii of each safe set of fi
+    O_fi = x_current-GI_hat'./M;            
+    R_fi = sqrt((vecnorm(GI_hat',2,2)/M).^2-2*fi_current'/M);
+
 
     % Compute the upper bound of the step length
     alpha_hat = min(R_fi);
@@ -143,6 +158,7 @@ for iter = 1:T
 
 end
 
+% plot figure
 plot_figure(x_hist,y_hist,fi_hist);
 
 %% Auxiliary functions
