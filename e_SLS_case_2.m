@@ -9,7 +9,7 @@ T = 300;                    % Maximum iteration
 mu = 0.01;                  % Gradient estimation deviation upperbound
 h = 0.05;                   % Safety threshold
 epsl = 1e-10;               % Convergence condition
-rho = 0.5;                  % Update rate of step length selection 0.9
+rho = 0.9;                  % Update rate of step length selection
 c = 10^-4;                  % Small constant in step length selection
 use_newton_direction = 1;   % Use quasi-newton direction or steepest descent: 
                             % 1-quasi_newton, 0-steepest descent
@@ -129,7 +129,7 @@ for iter = 1:T
     fi_k1 = fi_fun(x_current+alpha*p');
 
     % Select safe step length
-    while y_k1 > y_k + c*alpha*(G0'*p) || min(-fi_k1)<0.9*h
+    while y_k1 > y_k + c*alpha*(G0'*p)
         alpha = alpha* rho;
 
         y_k1 = obj_fun(x_current+alpha*p');

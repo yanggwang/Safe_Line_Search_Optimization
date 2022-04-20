@@ -145,7 +145,7 @@ function [x_next,lambda,converged,G0] = esls(x_current,x_last,gt_last,obj_hand,f
     fi_k1 = fi_hand(x_current+alpha*p');
     
     % Select safe step length
-    while y_k1 > y_k + c*alpha*(G0'*p) || min(-fi_k1)<0.9*h
+    while y_k1 > y_k + c*alpha*(G0'*p)
         alpha = alpha* rho;
     
         y_k1 = obj_hand(x_current+alpha*p');
