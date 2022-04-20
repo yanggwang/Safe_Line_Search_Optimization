@@ -5,11 +5,11 @@ M = 4;                % Smoothness constant
 T = 300;              % Maximum iteration
 
 mu = 0.01;            % Gradient estimation deviation upperbound
-h = 0.01;             % Safety threshold
+h = 0.05;             % Safety threshold
 epsl = 1e-10;         % Convergence condition
 rho = 0.9;            % Update rate of step length selection
 c = 10^-4;            % Small constant in step length selection
-newton_direction = 1; % Use quasi-newton direction or steepest descent: 
+newton_direction = 0; % Use quasi-newton direction or steepest descent: 
                       % 1-quasi_newton, 0-steepest descent
 
 
@@ -85,7 +85,7 @@ function fi = fi_fun(x)
 end
 
 % Plot figures
-function []=plot_figure(x_hist,y_hist,fi_hist,O_fi,R_fi)
+function []=plot_figure(x_hist,y_hist,fi_hist)
     n_itr = size(y_hist,1);
     
     figure(1)
