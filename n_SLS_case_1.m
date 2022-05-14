@@ -17,6 +17,9 @@ delta = 0.01;               % Probability of not violating constraints: 1-delta
 nk = 100;                   % Number of measurements of function values
                             % Set to zero if use the measurements times computed by
                             % algorithm (a large value);
+                            
+use_newton_direction = 0;   % Use quasi-newton direction or steepest descent: 
+                            % 1-quasi_newton, 0-steepest descent
 
 %% Define problem
 x0 = [0,-4];                % Starting point
@@ -33,8 +36,6 @@ d = size(x0,2);             % Dimension of the problem
 m = size(fi_0,2);           % Number of constraints
 
 H = eye(d);                 % Initial inverse Hessian for computing newton direction
-use_newton_direction = 0;   % Use quasi-newton direction or steepest descent: 
-                            % 1-quasi_newton, 0-steepest descent
 
 %% Optimization loop
 for iter = 1:T
@@ -109,7 +110,7 @@ for iter = 1:T
         % Solve non-negative least squares problem
         [lambda_sol,resnorm,resvec] = lsqnonneg(GI_hat(:,A),p_orig);    
 
-        p_proj = -resvec;
+        p_proj = resvec;
         p = p_proj;
 
         % Recompute GI hat

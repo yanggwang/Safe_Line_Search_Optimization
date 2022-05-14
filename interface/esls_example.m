@@ -5,7 +5,7 @@ M = 4;                % Smoothness constant
 T = 300;              % Maximum iteration
 
 mu = 0.01;            % Gradient estimation deviation upperbound
-h = 0.05;             % Safety threshold
+h = 0.1;             % Safety threshold
 epsl = 1e-10;         % Convergence condition
 rho = 0.9;            % Update rate of step length selection
 c = 10^-4;            % Small constant in step length selection

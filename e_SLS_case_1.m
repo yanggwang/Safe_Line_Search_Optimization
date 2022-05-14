@@ -7,7 +7,7 @@ M = 4;                      % Smoothness constant
 T = 300;                    % Maximum iteration
 
 mu = 0.01;                  % Gradient estimation deviation upperbound
-h = 0.00;                   % Safety threshold
+h = 0.1;                   % Safety threshold
 epsl = 1e-10;               % Convergence condition
 rho = 0.9;                  % Update rate of step length selection
 c = 10^-4;                  % Small constant in step length selection
@@ -98,7 +98,7 @@ for iter = 1:T
         % Solve non-negative least squares problem
         [lambda_sol,resnorm,resvec] = lsqnonneg(GI_hat(:,A),p_orig);    
 
-        p_proj = -resvec;
+        p_proj = resvec;
         p = p_proj;
 
         % Recompute GI hat

@@ -96,7 +96,7 @@ for iter = 1:T
         % Solve non-negative least squares problem
         [lambda_sol,resnorm,resvec] = lsqnonneg(GI_hat(:,A),p_orig);    
 
-        p_proj = -resvec;
+        p_proj = resvec;
         p = p_proj;
 
         % Recompute GI hat
